@@ -79,6 +79,58 @@ export function init(canvas) {
 
   mainSound.play();
 }
+export function resetGame() {
+  // Сбросить переменные игрового состояния
+  gameState.bullets = [];
+  gameState.aliens = [];
+  gameState.gameOver = false;
+  gameState.score = 0;
+  direction = 1;
+  killedAliens = 0;
+  isEnhancedMode = false;
+
+  // Пересоздать алиенов
+  const alienTypes = [
+    { type: 0, hp: 1 },
+    { type: 1, hp: 3 },
+    { type: 0, hp: 1 },
+    { type: 0, hp: 1 },
+    { type: 2, hp: 3 },
+    { type: 0, hp: 1 },
+  ];
+  for (var i = 0, len = alienTypes.length; i < len; i++) {
+    for (var j = 0; j < 10; j++) {
+      const { type, hp } = alienTypes[i];
+
+      let alienX = 30 + j * 30;
+      let alienY = 30 + i * 30;
+
+      if (type === 1) {
+        alienX += 3; // (kostyl) aliens of this type is a bit thinner
+      }
+
+      gameState.aliens.push(
+        new Alien(alienX, alienY, sprites.aliens[type], hp)
+      );
+    }
+  }
+
+  // Пересоздать пушки и бункеры
+  gameState.cannon = new Cannon(100, canvas.height - 100, sprites.cannon, 5);
+  gameState.bunkers = [];
+  for (let i = 0; i < 6; i++) {
+    gameState.bunkers.push(
+      new Bunker(70 + i * 70, canvas.height - 140, sprites.bunker, 8)
+    );
+  }
+}
+
+// Добавьте вызов resetGame там, где вы хотите начать новую игру
+// Например, в функции обработки нажатия клавиши "N" или "R"
+function startNewGame() {
+  // Reset the game state and start a new game
+  resetGame();
+}
 
 export function update(time, stopGame) {
   if (inputHandler.isDown("ArrowLeft")) {
@@ -106,13 +158,22 @@ export function update(time, stopGame) {
   }
 
   handleAlienShoot();
+  if (inputHandler.isPressed("KeyN")) {
+    startNewGame();
+  }
   if (gameState.cannon.hp <= 0) {
     gameState.gameOver = true;
-    stopGame();
+    //stopGame();
+    if (inputHandler.isPressed("KeyN")) {
+      startNewGame();
+    }
   }
   if (gameState.aliens.length === 0) {
     gameState.gameOver = true;
-    stopGame();
+    //stopGame();
+    if (inputHandler.isPressed("KeyN")) {
+      startNewGame();
+    }
   }
   gameState.bullets.forEach((b) => {
     b.update(time, gameState);
@@ -221,6 +282,12 @@ function drawGameOver(ctx) {
   ctx.fillStyle = "#fff"; 
   ctx.textAlign = "center";
   ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+
+  ctx.font = "bold 30px monospace";
+  ctx.fillText("Score: " + gameState.score, canvas.width / 2, canvas.height / 2 + 50);
+
+  ctx.font = "bold 20px monospace";
+  ctx.fillText("Press 'N' for New Game", canvas.width / 2, canvas.height / 2 + 100);
 }
 
 function drawGameWin(ctx) {
@@ -231,6 +298,12 @@ function drawGameWin(ctx) {
   ctx.fillStyle = "#fff"; 
   ctx.textAlign = "center";
   ctx.fillText("You Win!", canvas.width / 2, canvas.height / 2);
+
+  ctx.font = "bold 30px monospace";
+  ctx.fillText("Score: " + gameState.score, canvas.width / 2, canvas.height / 2 + 50);
+
+  ctx.font = "bold 20px monospace";
+  ctx.fillText("Press 'N' for New Game", canvas.width / 2, canvas.height / 2 + 100);
 }
 function isGameWin() {
   return gameState.aliens.length === 0;

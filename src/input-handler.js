@@ -9,6 +9,11 @@ export default class InputHandler {
             delete this.down[e.code];
             delete this.pressed[e.code];
         });
+        document.addEventListener("keydown", event => {
+            if (event.code === "KeyR") {
+              startNewGame();
+            }
+          });
     }
 
     /**
