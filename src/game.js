@@ -80,7 +80,6 @@ export function init(canvas) {
   mainSound.play();
 }
 export function resetGame() {
-  // Сбросить переменные игрового состояния
   gameState.bullets = [];
   gameState.aliens = [];
   gameState.gameOver = false;
@@ -89,7 +88,6 @@ export function resetGame() {
   killedAliens = 0;
   isEnhancedMode = false;
 
-  // Пересоздать алиенов
   const alienTypes = [
     { type: 0, hp: 1 },
     { type: 1, hp: 3 },
@@ -106,7 +104,7 @@ export function resetGame() {
       let alienY = 30 + i * 30;
 
       if (type === 1) {
-        alienX += 3; // (kostyl) aliens of this type is a bit thinner
+        alienX += 3; 
       }
 
       gameState.aliens.push(
@@ -115,7 +113,6 @@ export function resetGame() {
     }
   }
 
-  // Пересоздать пушки и бункеры
   gameState.cannon = new Cannon(100, canvas.height - 100, sprites.cannon, 5);
   gameState.bunkers = [];
   for (let i = 0; i < 6; i++) {
@@ -125,10 +122,8 @@ export function resetGame() {
   }
 }
 
-// Добавьте вызов resetGame там, где вы хотите начать новую игру
-// Например, в функции обработки нажатия клавиши "N" или "R"
+
 function startNewGame() {
-  // Reset the game state and start a new game
   resetGame();
 }
 
